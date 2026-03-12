@@ -28,13 +28,14 @@ services:
 
   image-service:
     build:
-      context: ./image-service
+      context: ./services/apps/image-service
       dockerfile: Dockerfile.dev
     container_name: image-flow-service
     ports:
       - "3000:3000"
     volumes:
-      - ./image-service:/usr/src/app
+      - ./services/apps/image-service:/usr/src/app
+      - ./services/common:/usr/src/common
       - /usr/src/app/node_modules
     environment:
       - DATABASE_HOST=postgres
@@ -52,11 +53,12 @@ services:
 
   processor-service:
     build:
-      context: ./processor-service
+      context: ./services/apps/processor-service
       dockerfile: Dockerfile.dev
     container_name: image-flow-processor
     volumes:
-      - ./processor-service:/usr/src/app
+      - ./services/apps/processor-service:/usr/src/app
+      - ./services/common:/usr/src/common
       - /usr/src/app/node_modules
     environment:
       - MINIO_ENDPOINT=minio
