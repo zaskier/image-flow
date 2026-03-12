@@ -7,11 +7,21 @@ on:
     branches: [ main ]
 
 jobs:
+  get_services:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.set_matrix.outputs.services }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set_matrix
+        run: echo "services=$(ls -d */ | sed 's/\/$//' | jq -R -s 'split("\n") | map(select(length > 0))')" >> $GITHUB_OUTPUT
+
   test:
+    needs: get_services
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [image-service, processor-service]
+        service: ${{ fromJson(needs.get_services.outputs.services) }}
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
