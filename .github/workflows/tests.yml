@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: set_matrix
-        run: echo "services=$(ls -d */ | sed 's/\/$//' | jq -c -R -s 'split("\n") | map(select(length > 0))')" >> $GITHUB_OUTPUT
+        run: echo "services=$(ls -d services/*/ | sed 's|services/||;s/\/$//' | jq -c -R -s 'split("\n") | map(select(length > 0))')" >> $GITHUB_OUTPUT
 
   test:
     needs: get_services
@@ -27,18 +27,18 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
-          cache-dependency-path: ${{ matrix.service }}/package-lock.json
+          cache-dependency-path: services/${{ matrix.service }}/package-lock.json
       - name: Install dependencies
-        working-directory: ${{ matrix.service }}
+        working-directory: services/${{ matrix.service }}
         run: npm ci
       - name: Lint
-        working-directory: ${{ matrix.service }}
+        working-directory: services/${{ matrix.service }}
         run: npm run lint
       - name: Architecture tests
-        working-directory: ${{ matrix.service }}
+        working-directory: services/${{ matrix.service }}
         run: npm run test:arch
       - name: Tests and coverage
-        working-directory: ${{ matrix.service }}
+        working-directory: services/${{ matrix.service }}
         run: npm run test:cov
