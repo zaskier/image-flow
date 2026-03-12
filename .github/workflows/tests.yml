@@ -1,0 +1,34 @@
+name: tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [image-service, processor-service]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.service }}/package-lock.json
+      - name: Install dependencies
+        working-directory: ${{ matrix.service }}
+        run: npm ci
+      - name: Lint
+        working-directory: ${{ matrix.service }}
+        run: npm run lint
+      - name: Architecture tests
+        working-directory: ${{ matrix.service }}
+        run: npm run test:arch
+      - name: Tests and coverage
+        working-directory: ${{ matrix.service }}
+        run: npm run test:cov
