@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { ImageRepositoryToken } from "../ports/image.repository";
 import type { ImageRepository } from "../ports/image.repository";
 import type { Image } from "../../domain/entities/image.entity";
@@ -20,6 +20,14 @@ export class ImageService {
       attempts: 0,
     };
     return this.imageRepository.save(image);
+  }
+
+  async update(id: string, updateData: Partial<Image>): Promise<Image> {
+    const image = await this.imageRepository.findById(id);
+    if (!image) {
+      throw new NotFoundException(`Image with ID ${id} not found`);
+    }
+    return this.imageRepository.save({ ...image, ...updateData });
   }
 
   async findById(id: string): Promise<Image | null> {

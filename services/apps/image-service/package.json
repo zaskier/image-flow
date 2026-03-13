@@ -27,6 +27,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1008.0",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.6",
@@ -89,7 +90,8 @@
       "^src/(.*)$": "<rootDir>/src/$1",
       "^@domain/(.*)$": "<rootDir>/src/domain/$1",
       "^@application/(.*)$": "<rootDir>/src/application/$1",
-      "^@infrastructure/(.*)$": "<rootDir>/src/infrastructure/$1"
+      "^@infrastructure/(.*)$": "<rootDir>/src/infrastructure/$1",
+      "^@common/(.*)$": "<rootDir>/../../common/$1"
     },
     "coverageThreshold": {
       "global": {

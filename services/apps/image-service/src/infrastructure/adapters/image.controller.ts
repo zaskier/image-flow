@@ -1,8 +1,9 @@
-import { Body, Controller, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Patch, Param, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ImageService } from "../../application/services/image.service";
 import { CreateImageDto } from "./dtos/create-image.dto";
+import { UpdateImageDto } from "./dtos/update-image.dto";
 
 @ApiTags("images")
 @Controller("images")
@@ -19,5 +20,12 @@ export class ImageController {
     @Body() createImageDto: CreateImageDto,
   ) {
     return this.imageService.create(createImageDto.title, file);
+  }
+
+  @Patch(":id")
+  @ApiOperation({ summary: "Update image metadata or status" })
+  @ApiResponse({ status: 200, description: "Image successfully updated" })
+  async updateImage(@Param("id") id: string, @Body() updateImageDto: UpdateImageDto) {
+    return this.imageService.update(id, updateImageDto);
   }
 }
