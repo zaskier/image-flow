@@ -1,0 +1,32 @@
+import { Inject, Injectable } from "@nestjs/common";
+import { ImageRepositoryToken } from "../ports/image.repository";
+import type { ImageRepository } from "../ports/image.repository";
+import type { Image } from "../../domain/entities/image.entity";
+import { ImageStatus } from "@common/enums/image-status.enum";
+import type { UploadedFile } from "../ports/uploaded-file.interface";
+
+@Injectable()
+export class ImageService {
+  constructor(
+    @Inject(ImageRepositoryToken)
+    private readonly imageRepository: ImageRepository,
+  ) {}
+
+  async create(title: string, file: UploadedFile): Promise<Image> {
+    const image: Partial<Image> = {
+      title,
+      original_s3_key: file.key,
+      status: ImageStatus.PENDING,
+      attempts: 0,
+    };
+    return this.imageRepository.save(image);
+  }
+
+  async findById(id: string): Promise<Image | null> {
+    return this.imageRepository.findById(id);
+  }
+
+  async findAll(options?: { title?: string }): Promise<Image[]> {
+    return this.imageRepository.findAll(options);
+  }
+}

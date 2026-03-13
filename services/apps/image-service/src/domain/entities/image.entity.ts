@@ -1,5 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
-import { ImageStatus } from "../../../../../common/enums/image-status.enum";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
+import { ImageStatus } from "@common/enums/image-status.enum";
 
 @Entity("images")
 export class Image {

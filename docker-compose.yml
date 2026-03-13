@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -32,7 +32,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: image-flow-service
     ports:
-      - "3000:3000"
+      - "3000:8080"
     volumes:
       - ./services/apps/image-service:/usr/src/app
       - ./services/common:/usr/src/common
@@ -67,6 +67,21 @@ services:
       - MINIO_SECRET_KEY=minioadmin
     depends_on:
       - minio
+
+  minio-init:
+    image: minio/mc
+    container_name: image-flow-storage-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb myminio/images;
+      /usr/bin/mc admin config set myminio notify_webhook:1 endpoint='http://processor-service:3001/webhooks/minio' queue_limit='0';
+      /usr/bin/mc admin service restart myminio;
+      /usr/bin/mc event add myminio/images arn:minio:sqs::1:webhook --event put;
+      exit 0;
+      "
 
 volumes:
   postgres_data:

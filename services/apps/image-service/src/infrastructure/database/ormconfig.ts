@@ -10,5 +10,6 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   database: process.env.DATABASE_NAME || 'image_flow',
   entities: [Image],
   migrations: [__dirname + '/migrations/*.ts'],
-  synchronize: false,
+  migrationsRun: false,
+  synchronize: true,
 };
