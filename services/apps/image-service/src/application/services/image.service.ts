@@ -34,6 +34,10 @@ export class ImageService {
     return this.imageRepository.findById(id);
   }
 
+  async findByKey(key: string): Promise<Image | null> {
+    return this.imageRepository.findByKey(key);
+  }
+
   async findAll(options?: { title?: string }): Promise<Image[]> {
     return this.imageRepository.findAll(options);
   }

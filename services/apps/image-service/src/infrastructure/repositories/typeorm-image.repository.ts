@@ -20,6 +20,10 @@ export class TypeOrmImageRepository implements ImageRepository {
     return this.repository.findOneBy({ id });
   }
 
+  async findByKey(key: string): Promise<Image | null> {
+    return this.repository.findOneBy({ original_s3_key: key });
+  }
+
   async findAll(options?: { title?: string }): Promise<Image[]> {
     const query = this.repository.createQueryBuilder("image");
     if (options?.title) {

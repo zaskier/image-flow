@@ -18,12 +18,22 @@ export class ImageProcessorService {
     try {
       const records = event.Records || [];
       for (const record of records) {
-        const s3Key = record.s3.object.key;
-        // In this implementation, the image ID is the UUID part of the filename if possible,
-        // or we use the s3Key to look up the image.
-        // Assuming metadata (like ID) is passed in the event or we need to extract it.
-        // For now, let's assume we can find the image by key or the ID is somehow available.
-        // We'll refine this in the parsing task.
+        const s3Key = decodeURIComponent(record.s3.object.key);
+        this.logger.log(`Processing image with key: ${s3Key}`);
+
+        // Find the image record in image-service
+        const image = await this.imageApiService.findByKey(s3Key);
+        if (!image) {
+          this.logger.warn(`Image with key ${s3Key} not found in database. Skipping.`);
+          continue;
+        }
+
+        // Update status to UPLOADED
+        await this.imageApiService.updateImage(image.id, { status: ImageStatus.UPLOADED });
+        this.logger.log(`Image ${image.id} status updated to UPLOADED`);
+
+        // Trigger further processing (resizing) - to be implemented in Task 4+
+        // await this.processImage(image);
       }
     } catch (error) {
       this.logger.error("Error processing webhook", error.stack);

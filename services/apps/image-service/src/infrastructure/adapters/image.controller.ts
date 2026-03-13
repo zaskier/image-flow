@@ -1,4 +1,13 @@
-import { Body, Controller, Patch, Param, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Param,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ImageService } from "../../application/services/image.service";
@@ -27,5 +36,12 @@ export class ImageController {
   @ApiResponse({ status: 200, description: "Image successfully updated" })
   async updateImage(@Param("id") id: string, @Body() updateImageDto: UpdateImageDto) {
     return this.imageService.update(id, updateImageDto);
+  }
+
+  @Get("by-key/:key")
+  @ApiOperation({ summary: "Find image by original S3 key" })
+  @ApiResponse({ status: 200, description: "Image found" })
+  async findByKey(@Param("key") key: string) {
+    return this.imageService.findByKey(key);
   }
 }
