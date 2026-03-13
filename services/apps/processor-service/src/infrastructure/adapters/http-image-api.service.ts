@@ -17,14 +17,22 @@ export class HttpImageApiService implements ImageApiService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.baseUrl = this.configService.get<string>("IMAGE_SERVICE_URL", "http://image-service:8080");
+    this.baseUrl = this.configService.get<string>(
+      "IMAGE_SERVICE_URL",
+      "http://image-service:3005",
+    );
   }
 
   async updateImage(id: string, payload: UpdateImagePayload): Promise<void> {
     try {
-      await firstValueFrom(this.httpService.patch(`${this.baseUrl}/images/${id}`, payload));
+      await firstValueFrom(
+        this.httpService.patch(`${this.baseUrl}/images/${id}`, payload),
+      );
     } catch (error) {
-      this.logger.error(`Failed to update image ${id} in image-service`, error.stack);
+      this.logger.error(
+        `Failed to update image ${id} in image-service`,
+        error.stack,
+      );
       throw error;
     }
   }
@@ -32,14 +40,19 @@ export class HttpImageApiService implements ImageApiService {
   async findByKey(key: string): Promise<ImageResponse | null> {
     try {
       const { data } = await firstValueFrom(
-        this.httpService.get<ImageResponse>(`${this.baseUrl}/images/by-key/${key}`),
+        this.httpService.get<ImageResponse>(
+          `${this.baseUrl}/images/by-key/${key}`,
+        ),
       );
       return data;
     } catch (error) {
       if (error.response?.status === 404) {
         return null;
       }
-      this.logger.error(`Failed to find image by key ${key} in image-service`, error.stack);
+      this.logger.error(
+        `Failed to find image by key ${key} in image-service`,
+        error.stack,
+      );
       throw error;
     }
   }

@@ -32,7 +32,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: image-flow-service
     ports:
-      - "3000:8080"
+      - "3000:3005"
     volumes:
       - ./services/apps/image-service:/usr/src/app
       - ./services/common:/usr/src/common
@@ -56,6 +56,8 @@ services:
       context: ./services/apps/processor-service
       dockerfile: Dockerfile.dev
     container_name: image-flow-processor
+    ports:
+      - "3010:3015"
     volumes:
       - ./services/apps/processor-service:/usr/src/app
       - ./services/common:/usr/src/common
