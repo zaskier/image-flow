@@ -5,14 +5,17 @@ import {
   Patch,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
+  NotFoundException,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ImageService } from "../../application/services/image.service";
 import { CreateImageDto } from "./dtos/create-image.dto";
 import { UpdateImageDto } from "./dtos/update-image.dto";
+import { GetImagesDto } from "./dtos/get-images.dto";
 
 @ApiTags("images")
 @Controller("images")
@@ -43,5 +46,24 @@ export class ImageController {
   @ApiResponse({ status: 200, description: "Image found" })
   async findByKey(@Param("key") key: string) {
     return this.imageService.findByKey(key);
+  }
+
+  @Get()
+  @ApiOperation({ summary: "Get paginated list of images" })
+  @ApiResponse({ status: 200, description: "List of images" })
+  async findAll(@Query() query: GetImagesDto) {
+    return this.imageService.findAll(query);
+  }
+
+  @Get(":id")
+  @ApiOperation({ summary: "Get image by ID" })
+  @ApiResponse({ status: 200, description: "Image details" })
+  @ApiResponse({ status: 404, description: "Image not found" })
+  async findOne(@Param("id") id: string) {
+    const image = await this.imageService.findById(id);
+    if (!image) {
+      throw new NotFoundException(`Image with ID ${id} not found`);
+    }
+    return image;
   }
 }

@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, LessThan } from "typeorm";
 import { Image } from "../../domain/entities/image.entity";
 import { ImageRepository } from "../../application/ports/image.repository";
+import { ImageStatus } from "@common/enums/image-status.enum";
 
 @Injectable()
 export class TypeOrmImageRepository implements ImageRepository {
@@ -24,11 +25,32 @@ export class TypeOrmImageRepository implements ImageRepository {
     return this.repository.findOneBy({ original_s3_key: key });
   }
 
-  async findAll(options?: { title?: string }): Promise<Image[]> {
+  async findAll(options?: {
+    title?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ items: Image[]; total: number }> {
+    const page = options?.page ?? 1;
+    const limit = options?.limit ?? 10;
+    const skip = (page - 1) * limit;
+
     const query = this.repository.createQueryBuilder("image");
+
     if (options?.title) {
-      query.andWhere("image.title LIKE :title", { title: `%${options.title}%` });
+      query.andWhere("image.title ILIKE :title", { title: `%${options.title}%` });
     }
-    return query.getMany();
+
+    const [items, total] = await query.skip(skip).take(limit).getManyAndCount();
+
+    return { items, total };
+  }
+
+  async findStuckImages(olderThan: Date): Promise<Image[]> {
+    return this.repository.find({
+      where: [
+        { status: ImageStatus.UPLOADED, updated_at: LessThan(olderThan) },
+        { status: ImageStatus.PROCESSING, updated_at: LessThan(olderThan) },
+      ],
+    });
   }
 }

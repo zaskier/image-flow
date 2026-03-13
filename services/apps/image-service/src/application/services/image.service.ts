@@ -38,7 +38,11 @@ export class ImageService {
     return this.imageRepository.findByKey(key);
   }
 
-  async findAll(options?: { title?: string }): Promise<Image[]> {
+  async findAll(options?: {
+    title?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ items: Image[]; total: number }> {
     return this.imageRepository.findAll(options);
   }
 }
