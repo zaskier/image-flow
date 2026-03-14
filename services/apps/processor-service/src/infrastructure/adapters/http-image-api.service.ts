@@ -1,6 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
-import { ConfigService } from "@nestjs/config";
 import { firstValueFrom } from "rxjs";
 import {
   ImageApiService,
@@ -13,14 +12,8 @@ export class HttpImageApiService implements ImageApiService {
   private readonly logger = new Logger(HttpImageApiService.name);
   private readonly baseUrl: string;
 
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
-  ) {
-    this.baseUrl = this.configService.get<string>(
-      "IMAGE_SERVICE_URL",
-      "http://image-service:3005",
-    );
+  constructor(private readonly httpService: HttpService) {
+    this.baseUrl = process.env.IMAGE_SERVICE_URL || "http://image-service:3005";
   }
 
   async updateImage(id: string, payload: UpdateImagePayload): Promise<void> {

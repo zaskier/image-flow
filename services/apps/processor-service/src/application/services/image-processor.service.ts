@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import {
   ImageApiServiceToken,
   ImageResponse,
@@ -9,11 +9,10 @@ import { StorageServiceToken } from "../ports/storage.service";
 import type { StorageService } from "../ports/storage.service";
 import { ImageProcessorToken } from "../ports/image-processor";
 import type { ImageProcessor } from "../ports/image-processor";
+import { LoggerService } from "@common/logger/logger.service";
 
 @Injectable()
 export class ImageProcessorService {
-  private readonly logger = new Logger(ImageProcessorService.name);
-
   constructor(
     @Inject(ImageApiServiceToken)
     private readonly imageApiService: ImageApiService,
@@ -21,11 +20,12 @@ export class ImageProcessorService {
     private readonly storageService: StorageService,
     @Inject(ImageProcessorToken)
     private readonly imageProcessor: ImageProcessor,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(ImageProcessorService.name);
+  }
 
   async processWebhook(event: any): Promise<void> {
-    this.logger.log(`Received MinIO event: ${JSON.stringify(event)}`);
-
     try {
       const records = event.Records || [];
       for (const record of records) {
@@ -95,7 +95,7 @@ export class ImageProcessorService {
         width: dimensions.width,
         height: dimensions.height,
       });
-      this.logger.log(`Image ${image.id} processing complete and set to READY`);
+      this.logger.log(`it was processed: ${image.original_s3_key}`);
     } catch (error) {
       this.logger.error(`Failed to process image ${image.id}`, error.stack);
       await this.imageApiService.updateImage(image.id, {

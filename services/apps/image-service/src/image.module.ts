@@ -9,30 +9,32 @@ import { JanitorService } from "./application/services/janitor.service";
 import { ImageRepositoryToken } from "./application/ports/image.repository";
 import { TypeOrmImageRepository } from "./infrastructure/repositories/typeorm-image.repository";
 import { ImageController } from "./infrastructure/adapters/image.controller";
-import { S3ConfigService } from "./infrastructure/storage/s3-config.service";
 import { MulterConfigService } from "./infrastructure/storage/multer-config.service";
+import { LoggerModule } from "@common/logger/logger.module";
+import { S3Module } from "@common/s3/s3.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Image]),
     ConfigModule.forRoot({ isGlobal: true }),
     MulterModule.registerAsync({
-      imports: [ImageModule],
+      imports: [ImageModule, S3Module],
       useClass: MulterConfigService,
     }),
     ScheduleModule.forRoot(),
+    LoggerModule,
+    S3Module,
   ],
   controllers: [ImageController],
   providers: [
     ImageService,
     JanitorService,
-    S3ConfigService,
     MulterConfigService,
     {
       provide: ImageRepositoryToken,
       useClass: TypeOrmImageRepository,
     },
   ],
-  exports: [ImageService, S3ConfigService],
+  exports: [ImageService],
 })
 export class ImageModule {}

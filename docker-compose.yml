@@ -79,7 +79,7 @@ services:
       /bin/sh -c "
       /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
       /usr/bin/mc mb myminio/images;
-      /usr/bin/mc admin config set myminio notify_webhook:1 endpoint='http://processor-service:3001/webhooks/minio' queue_limit='0';
+      /usr/bin/mc admin config set myminio notify_webhook:1 endpoint='http://processor-service:3015/webhooks/minio' queue_limit='0';
       /usr/bin/mc admin service restart myminio;
       /usr/bin/mc event add myminio/images arn:minio:sqs::1:webhook --event put;
       exit 0;

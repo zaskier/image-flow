@@ -16,11 +16,17 @@ import { ImageService } from "../../application/services/image.service";
 import { CreateImageDto } from "./dtos/create-image.dto";
 import { UpdateImageDto } from "./dtos/update-image.dto";
 import { GetImagesDto } from "./dtos/get-images.dto";
+import { LoggerService, loggerStorage } from "@common/logger/logger.service";
 
 @ApiTags("images")
 @Controller("images")
 export class ImageController {
-  constructor(private readonly imageService: ImageService) {}
+  constructor(
+    private readonly imageService: ImageService,
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(ImageController.name);
+  }
 
   @Post()
   @ApiOperation({ summary: "Upload a new image" })
@@ -31,7 +37,11 @@ export class ImageController {
     @UploadedFile() file: Express.MulterS3.File,
     @Body() createImageDto: CreateImageDto,
   ) {
-    return this.imageService.create(createImageDto.title, file);
+    const correlationId = file.key;
+    return loggerStorage.run({ correlationId }, async () => {
+      this.logger.log(`Item pushed: ${correlationId} with title: ${createImageDto.title}`);
+      return this.imageService.create(createImageDto.title, file);
+    });
   }
 
   @Patch(":id")

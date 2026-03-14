@@ -4,13 +4,17 @@ import type { ImageRepository } from "../ports/image.repository";
 import type { Image } from "../../domain/entities/image.entity";
 import { ImageStatus } from "@common/enums/image-status.enum";
 import type { UploadedFile } from "../ports/uploaded-file.interface";
+import { LoggerService } from "@common/logger/logger.service";
 
 @Injectable()
 export class ImageService {
   constructor(
     @Inject(ImageRepositoryToken)
     private readonly imageRepository: ImageRepository,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(ImageService.name);
+  }
 
   async create(title: string, file: UploadedFile): Promise<Image> {
     const image: Partial<Image> = {
@@ -27,6 +31,7 @@ export class ImageService {
     if (!image) {
       throw new NotFoundException(`Image with ID ${id} not found`);
     }
+    this.logger.log(`Updating image ${id} with status: ${updateData.status}`);
     return this.imageRepository.save({ ...image, ...updateData });
   }
 

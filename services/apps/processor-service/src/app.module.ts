@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, MiddlewareConsumer, NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { HttpModule } from "@nestjs/axios";
 import { ImageProcessorService } from "./application/services/image-processor.service";
@@ -9,9 +9,12 @@ import { StorageServiceToken } from "./application/ports/storage.service";
 import { S3StorageService } from "./infrastructure/storage/s3-storage.service";
 import { ImageProcessorToken } from "./application/ports/image-processor";
 import { SharpImageProcessor } from "./infrastructure/image-processing/sharp-image-processor";
+import { LoggerModule } from "@common/logger/logger.module";
+import { HttpLoggingMiddleware } from "@common/logger/http-logging.middleware";
+import { S3Module } from "@common/s3/s3.module";
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), HttpModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), HttpModule, LoggerModule, S3Module],
   controllers: [WebhookController],
   providers: [
     ImageProcessorService,
@@ -29,4 +32,8 @@ import { SharpImageProcessor } from "./infrastructure/image-processing/sharp-ima
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpLoggingMiddleware).forRoutes("*");
+  }
+}
