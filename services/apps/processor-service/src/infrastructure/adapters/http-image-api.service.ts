@@ -49,4 +49,22 @@ export class HttpImageApiService implements ImageApiService {
       throw error;
     }
   }
+
+  async findById(id: string): Promise<ImageResponse | null> {
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.get<ImageResponse>(`${this.baseUrl}/images/${id}`),
+      );
+      return data;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      this.logger.error(
+        `Failed to find image by ID ${id} in image-service`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
 }

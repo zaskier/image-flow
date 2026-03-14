@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsInt, IsNotEmpty, IsString, Min } from "class-validator";
 import { Type } from "class-transformer";
 
 export class CreateImageDto {
@@ -11,17 +11,17 @@ export class CreateImageDto {
   @IsNotEmpty()
   title: string;
 
-  @ApiPropertyOptional({ description: "Target width for resizing", example: 800 })
-  @IsOptional()
+  @ApiProperty({ description: "Target width for resizing", example: 800 })
+  @IsNotEmpty()
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  width?: number;
+  width: number;
 
-  @ApiPropertyOptional({ description: "Target height for resizing", example: 600 })
-  @IsOptional()
+  @ApiProperty({ description: "Target height for resizing", example: 600 })
+  @IsNotEmpty()
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  height?: number;
+  height: number;
 }

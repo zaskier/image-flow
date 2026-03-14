@@ -44,12 +44,6 @@ export class ImageProcessorService {
           continue;
         }
 
-        // Update status to UPLOADED
-        await this.imageApiService.updateImage(image.id, {
-          status: ImageStatus.UPLOADED,
-        });
-        this.logger.log(`Image ${image.id} status updated to UPLOADED`);
-
         // Trigger processing
         await this.processImage(image, bucket);
       }
@@ -58,9 +52,36 @@ export class ImageProcessorService {
     }
   }
 
+  async processImageTask(data: {
+    id: string;
+    key: string;
+    width?: number;
+    height?: number;
+  }): Promise<void> {
+    try {
+      this.logger.log(`Received image processing task for ID: ${data.id}`);
+      const bucket = process.env.MINIO_BUCKET || "images";
+
+      const image = await this.imageApiService.findById(data.id);
+      if (!image) {
+        this.logger.error(`Image with ID ${data.id} not found`);
+        return;
+      }
+
+      const targetWidth = data.width ? Number(data.width) : undefined;
+      const targetHeight = data.height ? Number(data.height) : undefined;
+
+      await this.processImage(image, bucket, targetWidth, targetHeight);
+    } catch (error) {
+      this.logger.error(`Error in processImageTask: ${error.message}`, error.stack);
+    }
+  }
+
   private async processImage(
     image: ImageResponse,
     bucket: string,
+    targetWidth?: number,
+    targetHeight?: number,
   ): Promise<void> {
     try {
       // 1. Update status to PROCESSING
@@ -75,9 +96,10 @@ export class ImageProcessorService {
         image.original_s3_key,
       );
 
-      // 3. Resize image (example: max width 800px)
+      // 3. Resize image
+      this.logger.log(`Resizing image ${image.id} to ${targetWidth}x${targetHeight}`);
       const { buffer: processedBuffer, dimensions } =
-        await this.imageProcessor.resize(originalBuffer, 800);
+        await this.imageProcessor.resize(originalBuffer, targetWidth, targetHeight);
 
       // 4. Upload processed image
       const processedS3Key = `processed/${image.id}-${Date.now()}.jpg`;
@@ -95,7 +117,7 @@ export class ImageProcessorService {
         width: dimensions.width,
         height: dimensions.height,
       });
-      this.logger.log(`it was processed: ${image.original_s3_key}`);
+      this.logger.log(`Image ${image.id} processed successfully: ${processedS3Key}`);
     } catch (error) {
       this.logger.error(`Failed to process image ${image.id}`, error.stack);
       await this.imageApiService.updateImage(image.id, {

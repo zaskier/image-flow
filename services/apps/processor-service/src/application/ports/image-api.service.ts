@@ -18,6 +18,7 @@ export interface UpdateImagePayload {
 export interface ImageApiService {
   updateImage(id: string, payload: UpdateImagePayload): Promise<void>;
   findByKey(key: string): Promise<ImageResponse | null>;
+  findById(id: string): Promise<ImageResponse | null>;
 }
 
 export const ImageApiServiceToken = Symbol("ImageApiService");

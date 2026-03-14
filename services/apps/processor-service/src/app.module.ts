@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { HttpModule } from "@nestjs/axios";
 import { ImageProcessorService } from "./application/services/image-processor.service";
 import { WebhookController } from "./infrastructure/adapters/webhook.controller";
+import { MessagingController } from "./infrastructure/adapters/messaging.controller";
 import { ImageApiServiceToken } from "./application/ports/image-api.service";
 import { HttpImageApiService } from "./infrastructure/adapters/http-image-api.service";
 import { StorageServiceToken } from "./application/ports/storage.service";
@@ -15,7 +16,7 @@ import { S3Module } from "@common/s3/s3.module";
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }), HttpModule, LoggerModule, S3Module],
-  controllers: [WebhookController],
+  controllers: [WebhookController, MessagingController],
   providers: [
     ImageProcessorService,
     {
