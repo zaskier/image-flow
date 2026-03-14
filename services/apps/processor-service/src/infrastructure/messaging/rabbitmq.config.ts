@@ -9,5 +9,9 @@ export const getRabbitMqConfig = (): RmqOptions => ({
     queueOptions: {
       durable: true,
     },
+    socketOptions: {
+      heartbeatIntervalInSeconds: 60,
+      reconnectTimeInSeconds: 5,
+    },
   },
 });

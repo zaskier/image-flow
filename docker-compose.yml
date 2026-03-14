@@ -30,7 +30,7 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: image-flow-mq
     ports:
-      - "5672:5672"   # AMQP
+      - "5672:5672" # AMQP
       - "15672:15672" # Management UI
     environment:
       RABBITMQ_DEFAULT_USER: guest
@@ -58,18 +58,20 @@ services:
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - postgres
       - minio
       - rabbitmq
+      - redis
 
   processor-service:
     build:
       context: ./services/apps/processor-service
       dockerfile: Dockerfile.dev
-    container_name: image-flow-processor
     ports:
-      - "3010:3015"
+      - "3010-3015:3015"
     volumes:
       - ./services/apps/processor-service:/usr/src/app
       - ./services/common:/usr/src/common
@@ -80,6 +82,7 @@ services:
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - IMAGE_SERVICE_URL=http://image-service:3005
     depends_on:
       - minio
       - rabbitmq

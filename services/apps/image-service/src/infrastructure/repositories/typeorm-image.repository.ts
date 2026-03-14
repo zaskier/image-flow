@@ -13,8 +13,7 @@ export class TypeOrmImageRepository implements ImageRepository {
   ) {}
 
   async save(image: Partial<Image>): Promise<Image> {
-    const entity = this.repository.create(image);
-    return this.repository.save(entity);
+    return this.repository.save(image);
   }
 
   async findById(id: string): Promise<Image | null> {

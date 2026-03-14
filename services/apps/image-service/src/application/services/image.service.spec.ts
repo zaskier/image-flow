@@ -57,7 +57,7 @@ describe("ImageService", () => {
 
   describe("create", () => {
     it("should create a new image record and emit a message", async () => {
-      const dto = { title: "Test Image", width: 800, height: 600 };
+      const dto = { title: "Test Image", width: 800, height: 600, file: {} as any };
       const file = { key: "original-key" } as any;
       const result = await service.create(dto, file);
 
