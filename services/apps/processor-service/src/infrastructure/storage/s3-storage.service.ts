@@ -1,35 +1,19 @@
 import { Injectable, Logger } from "@nestjs/common";
-import {
-  S3Client,
-  GetObjectCommand,
-  PutObjectCommand,
-  NoSuchKey,
-} from "@aws-sdk/client-s3";
-import { ConfigService } from "@nestjs/config";
+import { GetObjectCommand, PutObjectCommand, NoSuchKey } from "@aws-sdk/client-s3";
 import { StorageService } from "../../application/ports/storage.service";
 import { Readable } from "stream";
+import { S3Service } from "@common/s3/s3.service";
 
 @Injectable()
 export class S3StorageService implements StorageService {
   private readonly logger = new Logger(S3StorageService.name);
-  private readonly s3Client: S3Client;
 
-  constructor(private readonly configService: ConfigService) {
-    this.s3Client = new S3Client({
-      endpoint: `http://${this.configService.get<string>("MINIO_ENDPOINT")}:${this.configService.get<string>("MINIO_PORT")}`,
-      region: this.configService.get<string>("MINIO_REGION", "us-east-1"),
-      credentials: {
-        accessKeyId: this.configService.get<string>("MINIO_ACCESS_KEY", "minioadmin"),
-        secretAccessKey: this.configService.get<string>("MINIO_SECRET_KEY", "minioadmin"),
-      },
-      forcePathStyle: true,
-    });
-  }
+  constructor(private readonly s3Service: S3Service) {}
 
   async download(bucket: string, key: string): Promise<Buffer> {
     try {
       const command = new GetObjectCommand({ Bucket: bucket, Key: key });
-      const response = await this.s3Client.send(command);
+      const response = await this.s3Service.getS3Client().send(command);
       const stream = response.Body as Readable;
 
       return new Promise((resolve, reject) => {
@@ -54,7 +38,7 @@ export class S3StorageService implements StorageService {
         Body: buffer,
         ContentType: contentType,
       });
-      await this.s3Client.send(command);
+      await this.s3Service.getS3Client().send(command);
     } catch (error) {
       this.logger.error(`Failed to upload file to ${bucket}/${key}`, error.stack);
       throw error;
