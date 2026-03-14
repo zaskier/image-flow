@@ -26,6 +26,16 @@ services:
     volumes:
       - minio_data:/data
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: image-flow-mq
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
   image-service:
     build:
       context: ./services/apps/image-service
@@ -47,9 +57,11 @@ services:
       - MINIO_PORT=9000
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     depends_on:
       - postgres
       - minio
+      - rabbitmq
 
   processor-service:
     build:
@@ -67,8 +79,10 @@ services:
       - MINIO_PORT=9000
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     depends_on:
       - minio
+      - rabbitmq
 
   minio-init:
     image: minio/mc

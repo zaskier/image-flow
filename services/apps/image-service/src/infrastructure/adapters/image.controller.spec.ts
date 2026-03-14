@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { ImageController } from "./image.controller";
 import { ImageService } from "../../application/services/image.service";
 import { ImageStatus } from "@common/enums/image-status.enum";
+import { LoggerService } from "@common/logger/logger.service";
 
 describe("ImageController", () => {
   let controller: ImageController;
@@ -16,12 +17,25 @@ describe("ImageController", () => {
       findAll: jest.fn(),
     };
 
+    const mockLogger = {
+      setContext: jest.fn(),
+      log: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      debug: jest.fn(),
+      verbose: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ImageController],
       providers: [
         {
           provide: ImageService,
           useValue: mockService,
+        },
+        {
+          provide: LoggerService,
+          useValue: mockLogger,
         },
       ],
     }).compile();
@@ -36,7 +50,7 @@ describe("ImageController", () => {
 
   describe("findAll", () => {
     it("should return paginated images", async () => {
-      const result = { items: [], total: 0 };
+      const result = { items: [], total: 0 } as any;
       jest.spyOn(service, "findAll").mockResolvedValue(result);
 
       expect(await controller.findAll({ page: 1, limit: 10 })).toBe(result);

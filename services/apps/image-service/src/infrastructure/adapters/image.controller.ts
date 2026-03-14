@@ -40,7 +40,7 @@ export class ImageController {
     const correlationId = file.key;
     return loggerStorage.run({ correlationId }, async () => {
       this.logger.log(`Item pushed: ${correlationId} with title: ${createImageDto.title}`);
-      return this.imageService.create(createImageDto.title, file);
+      return this.imageService.create(createImageDto, file);
     });
   }
 
