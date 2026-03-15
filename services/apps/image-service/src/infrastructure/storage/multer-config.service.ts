@@ -1,6 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { MulterOptionsFactory, MulterModuleOptions } from "@nestjs/platform-express";
 import { S3Service } from "@common/s3/s3.service";
+import { IMAGE_EXTENSIONS } from "@common/index";
 import multerS3 from "multer-s3";
 
 @Injectable()
@@ -17,6 +18,18 @@ export class MulterConfigService implements MulterOptionsFactory {
           cb(null, fileName);
         },
       }),
+      fileFilter: (req, file, cb) => {
+        const extension = file.originalname.split(".").pop()?.toLowerCase();
+        if (!extension || !IMAGE_EXTENSIONS.includes(extension)) {
+          return cb(
+            new BadRequestException(
+              `Invalid file format. Allowed formats: ${IMAGE_EXTENSIONS.join(", ")}`,
+            ),
+            false,
+          );
+        }
+        cb(null, true);
+      },
     };
   }
 }

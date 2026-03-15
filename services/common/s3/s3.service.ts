@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { S3Client } from "@aws-sdk/client-s3";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 @Injectable()
 export class S3Service {
@@ -27,5 +27,13 @@ export class S3Service {
 
   getBucketName(): string {
     return process.env.MINIO_BUCKET || "images";
+  }
+
+  async deleteFile(key: string): Promise<void> {
+    const command = new DeleteObjectCommand({
+      Bucket: this.getBucketName(),
+      Key: key,
+    });
+    await this.s3Client.send(command);
   }
 }

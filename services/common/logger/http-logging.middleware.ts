@@ -1,6 +1,7 @@
 import { Injectable, NestMiddleware } from "@nestjs/common";
 import { Request, Response, NextFunction } from "express";
-import { LoggerService } from "./logger.service";
+import { LoggerService, loggerStorage } from "./logger.service";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class HttpLoggingMiddleware implements NestMiddleware {
@@ -9,14 +10,20 @@ export class HttpLoggingMiddleware implements NestMiddleware {
   }
 
   use(req: Request, res: Response, next: NextFunction) {
-    const { ip, method, originalUrl } = req;
-    const userAgent = req.get("user-agent") || "";
+    const correlationId = (req.headers["x-correlation-id"] as string) || randomUUID();
 
-    res.on("finish", () => {
-      const { statusCode } = res;
-      this.logger.log(`${method} ${originalUrl} ${statusCode} - ${userAgent} ${ip}`);
+    loggerStorage.run({ correlationId }, () => {
+      const { ip, method, originalUrl } = req;
+      const userAgent = req.get("user-agent") || "";
+
+      res.on("finish", () => {
+        const { statusCode } = res;
+        this.logger.log(
+          `${method} ${originalUrl} ${statusCode} - ${userAgent} ${ip}`,
+        );
+      });
+
+      next();
     });
-
-    next();
   }
 }

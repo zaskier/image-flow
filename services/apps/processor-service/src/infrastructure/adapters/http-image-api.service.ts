@@ -6,6 +6,7 @@ import {
   ImageResponse,
   UpdateImagePayload,
 } from "../../application/ports/image-api.service";
+import { loggerStorage } from "@common/logger/logger.service";
 
 @Injectable()
 export class HttpImageApiService implements ImageApiService {
@@ -16,10 +17,19 @@ export class HttpImageApiService implements ImageApiService {
     this.baseUrl = process.env.IMAGE_SERVICE_URL || "http://image-service:3005";
   }
 
+  private getHeaders() {
+    const store = loggerStorage.getStore();
+    return store?.correlationId
+      ? { "X-Correlation-Id": store.correlationId }
+      : {};
+  }
+
   async updateImage(id: string, payload: UpdateImagePayload): Promise<void> {
     try {
       await firstValueFrom(
-        this.httpService.patch(`${this.baseUrl}/images/${id}`, payload),
+        this.httpService.patch(`${this.baseUrl}/images/${id}`, payload, {
+          headers: this.getHeaders(),
+        }),
       );
     } catch (error) {
       this.logger.error(
@@ -35,6 +45,9 @@ export class HttpImageApiService implements ImageApiService {
       const { data } = await firstValueFrom(
         this.httpService.get<ImageResponse>(
           `${this.baseUrl}/images/by-key/${key}`,
+          {
+            headers: this.getHeaders(),
+          },
         ),
       );
       return data;
@@ -53,7 +66,9 @@ export class HttpImageApiService implements ImageApiService {
   async findById(id: string): Promise<ImageResponse | null> {
     try {
       const { data } = await firstValueFrom(
-        this.httpService.get<ImageResponse>(`${this.baseUrl}/images/${id}`),
+        this.httpService.get<ImageResponse>(`${this.baseUrl}/images/${id}`, {
+          headers: this.getHeaders(),
+        }),
       );
       return data;
     } catch (error) {

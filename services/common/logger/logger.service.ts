@@ -33,14 +33,17 @@ export class LoggerService implements NestLoggerService {
 
   private print(level: string, message: any, ...optionalParams: any[]) {
     const store = loggerStorage.getStore();
-    const logObject = {
+    const logObject: any = {
       timestamp: new Date().toISOString(),
       level: level.toUpperCase(),
-      correlationId: store?.correlationId || null,
       context: this.context || null,
       message,
       ...(optionalParams.length > 0 ? { details: optionalParams } : {}),
     };
+
+    if (store?.correlationId) {
+      logObject.correlationId = store.correlationId;
+    }
 
     console[level](JSON.stringify(logObject));
   }

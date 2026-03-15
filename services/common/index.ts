@@ -5,3 +5,4 @@ export * from './logger/logger.module';
 export * from './logger/logger.service';
 export * from './logger/http-logging.middleware';
 export * from './constants/rabbitmq.constants';
+export * from './constants/image.constants';
