@@ -47,6 +47,7 @@ export class TypeOrmImageRepository implements ImageRepository {
   async findStuckImages(olderThan: Date): Promise<Image[]> {
     return this.repository.find({
       where: [
+        { status: ImageStatus.PENDING, updated_at: LessThan(olderThan) },
         { status: ImageStatus.UPLOADED, updated_at: LessThan(olderThan) },
         { status: ImageStatus.PROCESSING, updated_at: LessThan(olderThan) },
       ],

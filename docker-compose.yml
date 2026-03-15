@@ -63,6 +63,7 @@ services:
       - MINIO_PORT=9000
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
+      - MINIO_PUBLIC_URL=http://localhost:9000/images
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -100,8 +101,12 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
-      /usr/bin/mc mb myminio/images;
+      until /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin; do
+        echo 'Waiting for MinIO...'
+        sleep 2
+      done;
+      /usr/bin/mc mb --ignore-existing myminio/images;
+      /usr/bin/mc anonymous set download myminio/images;
       /usr/bin/mc admin config set myminio notify_webhook:1 endpoint='http://processor-service:3015/webhooks/minio' queue_limit='0';
       /usr/bin/mc admin service restart myminio;
       /usr/bin/mc event add myminio/images arn:minio:sqs::1:webhook --event put;
