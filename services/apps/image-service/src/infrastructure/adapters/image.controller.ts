@@ -21,9 +21,9 @@ import {
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import type { Cache } from "cache-manager";
 import { ImageService } from "../../application/services/image.service";
-import { CreateImageDto } from "./dtos/create-image.dto";
-import { UpdateImageDto } from "./dtos/update-image.dto";
-import { GetImagesDto } from "./dtos/get-images.dto";
+import { CreateImageDto } from "../../application/ports/dtos/create-image.dto";
+import { UpdateImageDto } from "../../application/ports/dtos/update-image.dto";
+import { GetImagesDto } from "../../application/ports/dtos/get-images.dto";
 import { LoggerService, loggerStorage } from "@common/logger/logger.service";
 
 @ApiTags("images")

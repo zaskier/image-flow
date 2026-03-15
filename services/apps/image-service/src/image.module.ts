@@ -5,7 +5,7 @@ import { MulterModule } from "@nestjs/platform-express";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ClientsModule } from "@nestjs/microservices";
 import { CacheModule } from "@nestjs/cache-manager";
-import { Image } from "./domain/entities/image.entity";
+import { Image } from "./infrastructure/database/entities/image.entity";
 import { ImageService } from "./application/services/image.service";
 import { JanitorService } from "./application/services/janitor.service";
 import { ImageRepositoryToken } from "./application/ports/image.repository";

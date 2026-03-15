@@ -2,11 +2,11 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { ImageRepositoryToken } from "../ports/image.repository";
 import type { ImageRepository } from "../ports/image.repository";
-import type { Image } from "../../domain/entities/image.entity";
 import { ImageStatus } from "@common/enums/image-status.enum";
+import { Image } from "../../infrastructure/database/entities/image.entity";
 import type { UploadedFile } from "../ports/uploaded-file.interface";
 import { LoggerService } from "@common/logger/logger.service";
-import { CreateImageDto } from "../../infrastructure/adapters/dtos/create-image.dto";
+import { CreateImageDto } from "../ports/dtos/create-image.dto";
 import { RABBITMQ_SERVICE } from "@common/constants/rabbitmq.constants";
 import { S3Service } from "@common/s3/s3.service";
 
