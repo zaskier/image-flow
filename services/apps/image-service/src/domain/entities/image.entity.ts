@@ -51,7 +51,8 @@ export class Image {
   @AfterInsert()
   setPublicUrl() {
     if (this.processed_s3_key) {
-      const baseUrl = process.env.MINIO_PUBLIC_URL || "http://localhost:9000/images";
+      const baseUrl =
+        process.env.MINIO_PUBLIC_URL || "http://localhost:9000/images";
       this.public_url = `${baseUrl}/${this.processed_s3_key}`;
     } else {
       this.public_url = null;

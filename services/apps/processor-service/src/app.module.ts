@@ -15,7 +15,12 @@ import { HttpLoggingMiddleware } from "@common/logger/http-logging.middleware";
 import { S3Module } from "@common/s3/s3.module";
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), HttpModule, LoggerModule, S3Module],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    HttpModule,
+    LoggerModule,
+    S3Module,
+  ],
   controllers: [WebhookController, MessagingController],
   providers: [
     ImageProcessorService,

@@ -1,5 +1,4 @@
 import { Image } from "../../domain/entities/image.entity";
-import { ImageStatus } from "@common/enums/image-status.enum";
 
 export interface ImageRepository {
   save(image: Partial<Image>): Promise<Image>;

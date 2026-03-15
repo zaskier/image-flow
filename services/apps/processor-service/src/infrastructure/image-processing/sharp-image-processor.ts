@@ -57,6 +57,7 @@ export class SharpImageProcessor implements ImageProcessor {
         throw error;
       }
       throw new BadRequestException(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         `Failed to process image: ${error.message}`,
       );
     }

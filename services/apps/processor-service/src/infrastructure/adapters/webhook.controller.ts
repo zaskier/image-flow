@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { ImageProcessorService } from "../../application/services/image-processor.service";
 import { LoggerService, loggerStorage } from "@common/logger/logger.service";
+import type { MinioEvent } from "../../application/ports/minio-event";
 
 @Controller("webhooks")
 export class WebhookController {
@@ -12,7 +13,7 @@ export class WebhookController {
   }
 
   @Post("minio")
-  async handleMinioEvent(@Body() event: any) {
+  async handleMinioEvent(@Body() event: MinioEvent) {
     const correlationId = event.Records?.[0]?.s3?.object?.key
       ? decodeURIComponent(event.Records[0].s3.object.key)
       : "unknown";

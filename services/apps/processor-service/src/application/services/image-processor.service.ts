@@ -10,6 +10,7 @@ import type { StorageService } from "../ports/storage.service";
 import { ImageProcessorToken } from "../ports/image-processor";
 import type { ImageProcessor } from "../ports/image-processor";
 import { LoggerService } from "@common/logger/logger.service";
+import { MinioEvent } from "../ports/minio-event";
 
 @Injectable()
 export class ImageProcessorService {
@@ -25,11 +26,11 @@ export class ImageProcessorService {
     this.logger.setContext(ImageProcessorService.name);
   }
 
-  async processWebhook(event: any): Promise<void> {
+  async processWebhook(event: MinioEvent): Promise<void> {
     try {
       const records = event.Records || [];
       for (const record of records) {
-        const s3Key = decodeURIComponent(record.s3.object.key);
+        const s3Key: string = decodeURIComponent(record.s3.object.key);
         const bucket = record.s3.bucket.name;
         this.logger.log(
           `Processing image from bucket ${bucket} with key: ${s3Key}`,
@@ -48,6 +49,7 @@ export class ImageProcessorService {
         await this.processImage(image, bucket);
       }
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       this.logger.error("Error processing webhook", error.stack);
     }
   }
@@ -73,7 +75,12 @@ export class ImageProcessorService {
 
       await this.processImage(image, bucket, targetWidth, targetHeight);
     } catch (error) {
-      this.logger.error(`Error in processImageTask: ${error.message}`, error.stack);
+      this.logger.error(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        `Error in processImageTask: ${error.message}`,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        error.stack,
+      );
     }
   }
 
@@ -97,9 +104,15 @@ export class ImageProcessorService {
       );
 
       // 3. Resize image
-      this.logger.log(`Resizing image ${image.id} to ${targetWidth}x${targetHeight}`);
+      this.logger.log(
+        `Resizing image ${image.id} to ${targetWidth ?? "auto"}x${targetHeight ?? "auto"}`,
+      );
       const { buffer: processedBuffer, dimensions } =
-        await this.imageProcessor.resize(originalBuffer, targetWidth, targetHeight);
+        await this.imageProcessor.resize(
+          originalBuffer,
+          targetWidth,
+          targetHeight,
+        );
 
       // 4. Upload processed image
       const processedS3Key = `processed/${image.id}-${Date.now()}.jpg`;
@@ -117,8 +130,11 @@ export class ImageProcessorService {
         width: dimensions.width,
         height: dimensions.height,
       });
-      this.logger.log(`Image ${image.id} processed successfully: ${processedS3Key}`);
+      this.logger.log(
+        `Image ${image.id} processed successfully: ${processedS3Key}`,
+      );
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       this.logger.error(`Failed to process image ${image.id}`, error.stack);
       await this.imageApiService.updateImage(image.id, {
         status: ImageStatus.FAILED,

@@ -49,6 +49,7 @@ export class ImageService {
 
       return savedImage;
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       this.logger.error(`Failed to save image metadata: ${error.message}`);
       // Rollback S3 upload
       try {
@@ -56,6 +57,7 @@ export class ImageService {
         await this.s3Service.deleteFile(file.key);
       } catch (s3Error) {
         this.logger.error(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           `Failed to rollback S3 upload: ${s3Error.message}. Manual cleanup may be required for key: ${file.key}`,
         );
       }

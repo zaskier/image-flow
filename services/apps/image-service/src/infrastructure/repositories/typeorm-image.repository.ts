@@ -36,7 +36,9 @@ export class TypeOrmImageRepository implements ImageRepository {
     const query = this.repository.createQueryBuilder("image");
 
     if (options?.title) {
-      query.andWhere("image.title ILIKE :title", { title: `%${options.title}%` });
+      query.andWhere("image.title ILIKE :title", {
+        title: `%${options.title}%`,
+      });
     }
 
     const [items, total] = await query.skip(skip).take(limit).getManyAndCount();

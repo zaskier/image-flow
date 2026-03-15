@@ -24,7 +24,9 @@ export class JanitorService {
       const stuckImages = await this.imageRepository.findStuckImages(olderThan);
 
       if (stuckImages.length > 0) {
-        this.logger.warn(`Found ${stuckImages.length} stuck images. Marking as FAILED.`);
+        this.logger.warn(
+          `Found ${stuckImages.length} stuck images. Marking as FAILED.`,
+        );
 
         for (const image of stuckImages) {
           await this.imageRepository.save({
@@ -37,6 +39,7 @@ export class JanitorService {
         this.logger.log("No stuck images found.");
       }
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       this.logger.error("Error during Janitor cleanup job", error.stack);
     }
   }

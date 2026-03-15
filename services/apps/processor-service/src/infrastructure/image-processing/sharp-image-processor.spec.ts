@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SharpImageProcessor } from "./sharp-image-processor";
 import sharp from "sharp";
-import { MAX_WIDTH, MAX_HEIGHT } from "@common/index";
+import { MAX_WIDTH } from "@common/index";
 import { BadRequestException } from "@nestjs/common";
 
 describe("SharpImageProcessor", () => {

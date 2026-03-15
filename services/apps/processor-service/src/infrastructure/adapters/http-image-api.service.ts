@@ -34,6 +34,7 @@ export class HttpImageApiService implements ImageApiService {
     } catch (error) {
       this.logger.error(
         `Failed to update image ${id} in image-service`,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         error.stack,
       );
       throw error;
@@ -52,11 +53,13 @@ export class HttpImageApiService implements ImageApiService {
       );
       return data;
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (error.response?.status === 404) {
         return null;
       }
       this.logger.error(
         `Failed to find image by key ${key} in image-service`,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         error.stack,
       );
       throw error;
@@ -72,11 +75,13 @@ export class HttpImageApiService implements ImageApiService {
       );
       return data;
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (error.response?.status === 404) {
         return null;
       }
       this.logger.error(
         `Failed to find image by ID ${id} in image-service`,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         error.stack,
       );
       throw error;

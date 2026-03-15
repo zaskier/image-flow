@@ -45,6 +45,7 @@ describe("MessagingController", () => {
       const payload = { id: "1", key: "test.jpg", width: 800 };
       await controller.handleImageUploaded(payload);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.processImageTask).toHaveBeenCalledWith(payload);
     });
   });
