@@ -2,9 +2,14 @@ FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY common /usr/src/common
+WORKDIR /usr/src/common
 RUN npm install
 
-COPY . .
+WORKDIR /usr/src/app
+COPY apps/image-service/package*.json ./
+RUN npm install
+
+COPY apps/image-service ./
 
 CMD ["npm", "run", "start:dev"]

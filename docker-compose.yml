@@ -36,10 +36,16 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 
+  redis:
+    image: redis:7-alpine
+    container_name: image-flow-cache
+    ports:
+      - "6379:6379"
+
   image-service:
     build:
-      context: ./services/apps/image-service
-      dockerfile: Dockerfile.dev
+      context: ./services
+      dockerfile: apps/image-service/Dockerfile.dev
     container_name: image-flow-service
     ports:
       - "3000:3005"
@@ -68,8 +74,8 @@ services:
 
   processor-service:
     build:
-      context: ./services/apps/processor-service
-      dockerfile: Dockerfile.dev
+      context: ./services
+      dockerfile: apps/processor-service/Dockerfile.dev
     ports:
       - "3010-3015:3015"
     volumes:
