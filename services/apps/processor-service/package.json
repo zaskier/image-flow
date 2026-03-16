@@ -80,7 +80,7 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
@@ -91,6 +91,10 @@
       "^@infrastructure/(.*)$": "<rootDir>/src/infrastructure/$1",
       "^@common/(.*)$": "<rootDir>/../../common/$1"
     },
+    "moduleDirectories": [
+      "node_modules",
+      "<rootDir>/node_modules"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 30,

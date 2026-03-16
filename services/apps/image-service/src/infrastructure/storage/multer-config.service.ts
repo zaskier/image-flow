@@ -4,7 +4,7 @@ import {
   MulterModuleOptions,
 } from "@nestjs/platform-express";
 import { S3Service } from "@common/s3/s3.service";
-import { IMAGE_EXTENSIONS } from "@common/index";
+import { IMAGE_EXTENSIONS, MAX_FILE_SIZE } from "@common/index";
 import multerS3 from "multer-s3";
 
 @Injectable()
@@ -21,7 +21,14 @@ export class MulterConfigService implements MulterOptionsFactory {
           cb(null, fileName);
         },
       }),
-      fileFilter: (req, file, cb) => {
+      limits: {
+        fileSize: MAX_FILE_SIZE,
+      },
+      fileFilter: (
+        req,
+        file,
+        cb: (error: Error | null, acceptFile: boolean) => void,
+      ) => {
         const extension = file.originalname.split(".").pop()?.toLowerCase();
         if (!extension || !IMAGE_EXTENSIONS.includes(extension)) {
           return cb(
