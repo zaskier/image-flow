@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
   AfterLoad,
   AfterInsert,
+  BeforeInsert,
+  BeforeUpdate,
 } from "typeorm";
 import { ImageStatus } from "@common/enums/image-status.enum";
 
@@ -23,7 +25,8 @@ export class Image {
   @Column({ nullable: true })
   processed_s3_key: string;
 
-  public_url: string | null = null;
+  @Column({ nullable: true })
+  public_url: string | null;
 
   @Column({
     type: "enum",
@@ -47,6 +50,8 @@ export class Image {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @BeforeInsert()
+  @BeforeUpdate()
   @AfterLoad()
   @AfterInsert()
   setPublicUrl() {

@@ -11,5 +11,5 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   entities: [Image],
   migrations: [__dirname + "/migrations/*.ts"],
   migrationsRun: false,
-  synchronize: true,
+  synchronize: false,
 };
