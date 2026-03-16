@@ -3,7 +3,7 @@ on:
   push:
     branches: [chore/tests]
   pull_request:
-    branches: [chore/tests]
+    branches: [main]
 
 jobs:
   get_services:
@@ -31,15 +31,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ matrix.service }}-${{ hashFiles(format('services/apps/{0}/package-lock.json', matrix.service)) }}
+          restore-keys: npm-${{ matrix.service }}-
+
       - name: Install dependencies
         working-directory: services/apps/${{ matrix.service }}
         run: npm ci
-
-      - name: Upload node_modules
-        uses: actions/upload-artifact@v4
-        with:
-          name: node_modules-${{ matrix.service }}
-          path: services/apps/${{ matrix.service }}/node_modules
 
   lint:
     needs: [get_services, install]
@@ -52,11 +53,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download node_modules
-        uses: actions/download-artifact@v4
+      - name: Cache npm
+        uses: actions/cache@v4
         with:
-          name: node_modules-${{ matrix.service }}
-          path: services/apps/${{ matrix.service }}/node_modules
+          path: ~/.npm
+          key: npm-${{ matrix.service }}-${{ hashFiles(format('services/apps/{0}/package-lock.json', matrix.service)) }}
+          restore-keys: npm-${{ matrix.service }}-
+
+      - name: Install dependencies
+        working-directory: services/apps/${{ matrix.service }}
+        run: npm ci
 
       - name: Lint
         working-directory: services/apps/${{ matrix.service }}
@@ -73,11 +79,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download node_modules
-        uses: actions/download-artifact@v4
+      - name: Cache npm
+        uses: actions/cache@v4
         with:
-          name: node_modules-${{ matrix.service }}
-          path: services/apps/${{ matrix.service }}/node_modules
+          path: ~/.npm
+          key: npm-${{ matrix.service }}-${{ hashFiles(format('services/apps/{0}/package-lock.json', matrix.service)) }}
+          restore-keys: npm-${{ matrix.service }}-
+
+      - name: Install dependencies
+        working-directory: services/apps/${{ matrix.service }}
+        run: npm ci
 
       - name: Architecture tests
         working-directory: services/apps/${{ matrix.service }}
@@ -94,11 +105,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download node_modules
-        uses: actions/download-artifact@v4
+      - name: Cache npm
+        uses: actions/cache@v4
         with:
-          name: node_modules-${{ matrix.service }}
-          path: services/apps/${{ matrix.service }}/node_modules
+          path: ~/.npm
+          key: npm-${{ matrix.service }}-${{ hashFiles(format('services/apps/{0}/package-lock.json', matrix.service)) }}
+          restore-keys: npm-${{ matrix.service }}-
+
+      - name: Install dependencies
+        working-directory: services/apps/${{ matrix.service }}
+        run: npm ci
 
       - name: Tests and coverage
         working-directory: services/apps/${{ matrix.service }}
