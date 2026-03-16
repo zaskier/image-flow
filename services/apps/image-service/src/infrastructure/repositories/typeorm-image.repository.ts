@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, LessThan } from "typeorm";
-import { Image } from "../database/entities/image.entity";
+import { Image } from "../../domain/entities/image.entity";
 import { ImageRepository } from "../../application/ports/image.repository";
 import { ImageStatus } from "@common/enums/image-status.enum";
 

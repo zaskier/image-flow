@@ -3,7 +3,7 @@ import { ClientProxy } from "@nestjs/microservices";
 import { ImageRepositoryToken } from "../ports/image.repository";
 import type { ImageRepository } from "../ports/image.repository";
 import { ImageStatus } from "@common/enums/image-status.enum";
-import { Image } from "../../infrastructure/database/entities/image.entity";
+import { Image } from "../../domain/entities/image.entity";
 import type { UploadedFile } from "../ports/uploaded-file.interface";
 import { LoggerService } from "@common/logger/logger.service";
 import { CreateImageDto } from "../ports/dtos/create-image.dto";

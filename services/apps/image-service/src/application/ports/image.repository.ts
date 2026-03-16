@@ -1,4 +1,4 @@
-import { Image } from "../../infrastructure/database/entities/image.entity";
+import { Image } from "../../domain/entities/image.entity";
 
 export interface ImageRepository {
   save(image: Partial<Image>): Promise<Image>;
