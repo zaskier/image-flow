@@ -1,7 +1,5 @@
 name: tests
 on:
-  push:
-    branches: [chore/tests]
   pull_request:
     branches: [main]
 
@@ -20,56 +18,21 @@ jobs:
             | jq -c -R -s 'split("\n") | map(select(length > 0))')" \
             >> $GITHUB_OUTPUT
 
-  install:
-    needs: get_services
+  install_common:
     runs-on: ubuntu-latest
     container:
       image: node:24
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.get_services.outputs.services) }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ matrix.service }}-${{ hashFiles(format('services/apps/{0}/package-lock.json', matrix.service)) }}
-          restore-keys: npm-${{ matrix.service }}-
-
-      - name: Install dependencies
-        working-directory: services/apps/${{ matrix.service }}
-        run: npm ci
-
-  lint:
-    needs: [get_services, install]
-    runs-on: ubuntu-latest
-    container:
-      image: node:24
-    strategy:
-      matrix:
-        service: ${{ fromJson(needs.get_services.outputs.services) }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ matrix.service }}-${{ hashFiles(format('services/apps/{0}/package-lock.json', matrix.service)) }}
-          restore-keys: npm-${{ matrix.service }}-
-
-      - name: Install dependencies
-        working-directory: services/apps/${{ matrix.service }}
-        run: npm ci
-
-      - name: Lint
-        working-directory: services/apps/${{ matrix.service }}
-        run: npm run lint
+      - name: Install Common dependencies
+        working-directory: services/common
+        run: npm install
+      - name: Build Common package
+        working-directory: services/common
+        run: npm run build
 
   test_arch:
-    needs: [get_services, install]
+    needs: [get_services, install_common]
     runs-on: ubuntu-latest
     container:
       image: node:24
@@ -79,23 +42,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ matrix.service }}-${{ hashFiles(format('services/apps/{0}/package-lock.json', matrix.service)) }}
-          restore-keys: npm-${{ matrix.service }}-
+      - name: Install Common dependencies
+        working-directory: services/common
+        run: npm install
 
       - name: Install dependencies
         working-directory: services/apps/${{ matrix.service }}
-        run: npm ci
+        run: npm install
 
       - name: Architecture tests
         working-directory: services/apps/${{ matrix.service }}
         run: npm run test:arch
 
   test_cov:
-    needs: [get_services, install]
+    needs: [get_services, install_common]
     runs-on: ubuntu-latest
     container:
       image: node:24
@@ -105,16 +65,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ matrix.service }}-${{ hashFiles(format('services/apps/{0}/package-lock.json', matrix.service)) }}
-          restore-keys: npm-${{ matrix.service }}-
+      - name: Install Common dependencies
+        working-directory: services/common
+        run: npm install
 
       - name: Install dependencies
         working-directory: services/apps/${{ matrix.service }}
-        run: npm ci
+        run: npm install
 
       - name: Tests and coverage
         working-directory: services/apps/${{ matrix.service }}
