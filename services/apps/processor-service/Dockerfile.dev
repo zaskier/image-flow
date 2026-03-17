@@ -1,13 +1,11 @@
-FROM node:20-alpine
+FROM node:24-alpine
 
 WORKDIR /usr/src/app
 
-# Copy common first
 COPY common /usr/src/common
 WORKDIR /usr/src/common
 RUN npm install
 
-# Then copy service
 WORKDIR /usr/src/app
 COPY apps/processor-service/package*.json ./
 RUN npm install

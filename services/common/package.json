@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Shared modules for Image Flow project",
   "private": true,
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -21,7 +24,7 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
-    "@types/node": "^22.10.7",
+    "@types/node": "^24.0.0",
     "typescript": "^5.7.3"
   }
 }

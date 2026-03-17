@@ -5,13 +5,15 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:arch": "depcruise src --config test/.dependency-cruiser.js",
@@ -58,7 +60,7 @@
     "@types/jest": "^30.0.0",
     "@types/multer": "^2.1.0",
     "@types/multer-s3": "^3.0.3",
-    "@types/node": "^22.10.7",
+    "@types/node": "^24.0.0",
     "@types/supertest": "^6.0.2",
     "dependency-cruiser": "^17.3.8",
     "eslint": "^9.18.0",

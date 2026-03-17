@@ -72,6 +72,7 @@ services:
       - minio
       - rabbitmq
       - redis
+    command: sh -c "cd /usr/src/common && npm run build && cd /usr/src/app && npm run build && npm run start:dev"
 
   processor-service:
     build:
@@ -93,12 +94,14 @@ services:
     depends_on:
       - minio
       - rabbitmq
+    command: sh -c "cd /usr/src/common && npm run build && cd /usr/src/app && npm run build && npm run start:dev"
 
   minio-init:
     image: minio/mc
     container_name: image-flow-storage-init
     depends_on:
       - minio
+      - processor-service
     entrypoint: >
       /bin/sh -c "
       until /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin; do
@@ -107,9 +110,16 @@ services:
       done;
       /usr/bin/mc mb --ignore-existing myminio/images;
       /usr/bin/mc anonymous set download myminio/images;
-      /usr/bin/mc admin config set myminio notify_webhook:1 endpoint='http://processor-service:3015/webhooks/minio' queue_limit='0';
+      until /usr/bin/mc admin config set myminio notify_webhook:1 endpoint='http://processor-service:3015/webhooks/minio' queue_limit='0'; do
+        echo 'Waiting for processor-service webhook endpoint...'
+        sleep 5
+      done;
       /usr/bin/mc admin service restart myminio;
-      /usr/bin/mc event add myminio/images arn:minio:sqs::1:webhook --event put;
+      sleep 5;
+      until /usr/bin/mc event add myminio/images arn:minio:sqs::1:webhook --event put; do
+        echo 'Waiting for event notification to be enabled...'
+        sleep 2
+      done;
       exit 0;
       "
 

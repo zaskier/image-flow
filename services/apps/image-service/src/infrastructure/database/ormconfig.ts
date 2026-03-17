@@ -9,7 +9,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   password: process.env.DATABASE_PASSWORD || "password",
   database: process.env.DATABASE_NAME || "image_flow",
   entities: [Image],
-  migrations: [__dirname + "/migrations/*.ts"],
-  migrationsRun: false,
+  migrations: [__dirname + "/migrations/*{.ts,.js}"],
+  migrationsRun: true,
   synchronize: false,
 };
