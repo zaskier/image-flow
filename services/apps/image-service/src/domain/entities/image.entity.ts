@@ -25,7 +25,7 @@ export class Image {
   @Column({ nullable: true })
   processed_s3_key: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   public_url: string | null;
 
   @Column({
