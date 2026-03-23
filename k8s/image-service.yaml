@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-service
+  namespace: image-flow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: image-service
+  template:
+    metadata:
+      labels:
+        app: image-service
+    spec:
+      containers:
+      - name: image-service
+        image: image-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3005
+        envFrom:
+        - configMapRef:
+            name: image-flow-config
+        - secretRef:
+            name: image-flow-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-service
+  namespace: image-flow
+spec:
+  type: LoadBalancer
+  selector:
+    app: image-service
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3005

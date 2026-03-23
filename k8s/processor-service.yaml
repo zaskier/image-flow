@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: processor-service
+  namespace: image-flow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: processor-service
+  template:
+    metadata:
+      labels:
+        app: processor-service
+    spec:
+      containers:
+      - name: processor-service
+        image: processor-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3015
+        envFrom:
+        - configMapRef:
+            name: image-flow-config
+        - secretRef:
+            name: image-flow-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: processor-service
+  namespace: image-flow
+spec:
+  selector:
+    app: processor-service
+  ports:
+  - protocol: TCP
+    port: 3015
+    targetPort: 3015
