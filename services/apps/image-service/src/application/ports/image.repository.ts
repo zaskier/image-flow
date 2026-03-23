@@ -5,10 +5,9 @@ export interface ImageRepository {
   findById(id: string): Promise<Image | null>;
   findByKey(key: string): Promise<Image | null>;
   findAll(options?: {
-    title?: string;
     page?: number;
     limit?: number;
-  }): Promise<{ items: Image[]; total: number }>;
+  }): Promise<{ items: Image[] }>;
   findStuckImages(olderThan: Date): Promise<Image[]>;
 }
 

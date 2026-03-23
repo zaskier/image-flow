@@ -8,6 +8,7 @@ import {
   AfterInsert,
   BeforeInsert,
   BeforeUpdate,
+  Index,
 } from "typeorm";
 import { ImageStatus } from "@common/enums/image-status.enum";
 
@@ -47,6 +48,7 @@ export class Image {
   @CreateDateColumn()
   created_at: Date;
 
+  @Index("idx_updated_at")
   @UpdateDateColumn()
   updated_at: Date;
 

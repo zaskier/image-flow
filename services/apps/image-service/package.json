@@ -92,6 +92,9 @@
     "collectCoverageFrom": [
       "**/*.ts"
     ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/src/infrastructure/database/"
+    ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
