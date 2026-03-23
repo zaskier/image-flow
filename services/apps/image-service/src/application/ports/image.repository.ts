@@ -7,7 +7,7 @@ export interface ImageRepository {
   findAll(options?: {
     page?: number;
     limit?: number;
-  }): Promise<{ items: Image[]; total: number }>;
+  }): Promise<{ items: Image[] }>;
   findStuckImages(olderThan: Date): Promise<Image[]>;
 }
 

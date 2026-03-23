@@ -1,4 +1,5 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { DataSource, DataSourceOptions } from "typeorm";
 import { Image } from "../../domain/entities/image.entity";
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
@@ -13,3 +14,5 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   migrationsRun: true,
   synchronize: false,
 };
+
+export default new DataSource(typeOrmConfig as DataSourceOptions);
