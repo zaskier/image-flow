@@ -6,7 +6,7 @@ REST API for uploading and serving images. Designed for scalability.
 
 - **Image Upload:** Upload images directly to MinIO (S3-compatible storage) with optional dimensions (width/height).
 - **Asynchronous Processing:** Event-driven resizing triggered via **RabbitMQ** message queue.
-- **Scalability:** Horizontal scaling of processing workers.
+- **Scalability:** Horizontal scaling of processing workers on dockercompose. Autoscalling of workers depending on rabbitMQ workers depending on queue depth implemented curently on local kubetnetes.
 - **Caching:** Redis-backed caching for image listing endpoint (first 2 pages) to reduce DB queries on the image service.
 - **Hexagonal Architecture:** Decoupled business logic from infrastructure.
 - **Janitor Job:** Automated cleanup of stuck processing tasks.
@@ -31,6 +31,10 @@ The project follows **Hexagonal Architecture** (Ports & Adapters):
 - **Domain:** Pure business entities (e.g., `Image`).
 - **Application:** Use cases and port interfaces (e.g., `ImageService`, `ImageRepository` port).
 - **Infrastructure:** Framework-specific implementations (e.g., `TypeOrmImageRepository`, `ImageController`, `RabbitMqPublisher`).
+
+Detailed architectural documentation:
+- [RabbitMQ Implementation & Planning](services/docs/RabbitMQ.md)
+- [Next Phases Planning](services/docs/Next_Phases.md)
 
 ## Business Requirement Assumptions
 
@@ -65,10 +69,21 @@ The project follows **Hexagonal Architecture** (Ports & Adapters):
 
 ### Running the System
 
+## Docker Compose
+
 1. Clone the repository.
 2. Run `docker compose up --build` from the root directory. You can use `--scale processor-service=N` to utilize more workers.
 3. The API will be available at `http://localhost:3000` (mapped to internal port 3005).
 4. Swagger UI: `http://localhost:3000/api`.
+
+## Local Kubernetes
+   ```
+   bash scripts/k8s/deploy-local.sh
+   ```
+   test keda scalling with script 
+   ```
+   bash scripts/test-scaling.sh
+   ```
 
 ### Testing the flow
 

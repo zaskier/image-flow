@@ -37,6 +37,7 @@ metadata:
   name: rabbitmq-service
   namespace: image-flow
 spec:
+  type: LoadBalancer
   selector:
     app: rabbitmq
   ports:
