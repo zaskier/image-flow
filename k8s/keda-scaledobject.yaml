@@ -1,0 +1,18 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: processor-service-scaler
+  namespace: image-flow
+spec:
+  scaleTargetRef:
+    name: processor-service
+  minReplicaCount: 0
+  maxReplicaCount: 10
+  pollingInterval: 30
+  cooldownPeriod:  300
+  triggers:
+  - type: rabbitmq
+    metadata:
+      queueName: image_process_queue
+      queueLength: '5'
+      hostFromEnv: RABBITMQ_URL

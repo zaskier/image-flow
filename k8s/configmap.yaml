@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: image-flow-config
+  namespace: image-flow
+data:
+  DATABASE_HOST: postgres-service
+  DATABASE_PORT: '5432'
+  DATABASE_USER: user
+  DATABASE_NAME: image_flow
+  MINIO_ENDPOINT: minio-service
+  MINIO_PORT: '9000'
+  MINIO_ACCESS_KEY: minioadmin
+  MINIO_PUBLIC_URL: http://localhost:9000/images
+  RABBITMQ_USER: guest
+  RABBITMQ_URL: amqp://guest:guest@rabbitmq-service:5672
+  REDIS_HOST: redis-service
+  REDIS_PORT: '6379'
+  IMAGE_SERVICE_URL: http://image-service:3005
