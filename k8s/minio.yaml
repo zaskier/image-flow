@@ -42,6 +42,7 @@ metadata:
   name: minio-service
   namespace: image-flow
 spec:
+  type: LoadBalancer
   selector:
     app: minio
   ports:

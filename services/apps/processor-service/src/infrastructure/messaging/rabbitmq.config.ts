@@ -6,6 +6,8 @@ export const getRabbitMqConfig = (): RmqOptions => ({
   options: {
     urls: [process.env.RABBITMQ_URL || "amqp://guest:guest@localhost:5672"],
     queue: IMAGE_PROCESS_QUEUE,
+    noAck: false,
+    prefetchCount: 1,
     queueOptions: {
       durable: true,
     },
