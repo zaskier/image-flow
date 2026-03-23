@@ -66,10 +66,12 @@ export class ImageController {
     @Body() updateImageDto: UpdateImageDto,
   ) {
     // Invalidate list cache on update
-    await this.cacheManager.del("images_list_page_1_limit_10");
-    await this.cacheManager.del("images_list_page_1_limit_20");
-    await this.cacheManager.del("images_list_page_2_limit_10");
-    await this.cacheManager.del("images_list_page_2_limit_20");
+    await Promise.all([
+      this.cacheManager.del("images_list_page_1_limit_10"),
+      this.cacheManager.del("images_list_page_1_limit_20"),
+      this.cacheManager.del("images_list_page_2_limit_10"),
+      this.cacheManager.del("images_list_page_2_limit_20"),
+    ]);
     return this.imageService.update(id, updateImageDto);
   }
 
@@ -87,8 +89,8 @@ export class ImageController {
     const page = Number(query.page ?? 1);
     const limit = Number(query.limit ?? 10);
 
-    // Only cache page 1 and 2
-    if (page === 1 || page === 2) {
+    // Only cache page 1 and 2 for standard limits (10 or 20)
+    if ((page === 1 || page === 2) && (limit === 10 || limit === 20)) {
       const cacheKey = `images_list_page_${page}_limit_${limit}`;
       const cachedData = await this.cacheManager.get(cacheKey);
 
@@ -97,12 +99,12 @@ export class ImageController {
         return cachedData;
       }
 
-      const result = await this.imageService.findAll(query);
+      const result = await this.imageService.findAll({ ...query, page, limit });
       await this.cacheManager.set(cacheKey, result, 60000); // 60s TTL
       return result;
     }
 
-    return this.imageService.findAll(query);
+    return this.imageService.findAll({ ...query, page, limit });
   }
 
   @Get(":id")

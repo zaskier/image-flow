@@ -25,23 +25,20 @@ export class TypeOrmImageRepository implements ImageRepository {
   }
 
   async findAll(options?: {
-    title?: string;
     page?: number;
     limit?: number;
   }): Promise<{ items: Image[]; total: number }> {
     const page = options?.page ?? 1;
-    const limit = options?.limit ?? 10;
+    const limit = Math.min(options?.limit ?? 20, 200);
     const skip = (page - 1) * limit;
 
     const query = this.repository.createQueryBuilder("image");
 
-    if (options?.title) {
-      query.andWhere("image.title ILIKE :title", {
-        title: `%${options.title}%`,
-      });
-    }
-
-    const [items, total] = await query.skip(skip).take(limit).getManyAndCount();
+    const [items, total] = await query
+      .orderBy("image.created_at", "DESC")
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
 
     return { items, total };
   }

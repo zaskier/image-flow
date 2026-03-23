@@ -1,13 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString, IsNumber, Min } from "class-validator";
+import { IsOptional, IsString, IsNumber, Min, Max } from "class-validator";
 import { Type } from "class-transformer";
 
 export class GetImagesDto {
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  title?: string;
-
   @ApiProperty({ required: false, default: 1 })
   @IsOptional()
   @Type(() => Number)
@@ -20,5 +15,6 @@ export class GetImagesDto {
   @Type(() => Number)
   @IsNumber()
   @Min(1)
+  @Max(200)
   limit?: number = 10;
 }

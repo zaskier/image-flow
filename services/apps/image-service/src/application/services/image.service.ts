@@ -84,7 +84,6 @@ export class ImageService {
   }
 
   async findAll(options?: {
-    title?: string;
     page?: number;
     limit?: number;
   }): Promise<{ items: Image[]; total: number }> {
