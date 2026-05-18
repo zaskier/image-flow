@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres-deployment
-  namespace: image-flow
+  namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.postgres.replicaCount }}
   selector:
     matchLabels:
       app: postgres
@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:15-alpine
+        image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+        imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
         ports:
         - containerPort: 5432
         env:
@@ -39,7 +40,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-service
-  namespace: image-flow
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     app: postgres

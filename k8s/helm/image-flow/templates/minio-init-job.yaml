@@ -2,13 +2,14 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: minio-init-job
-  namespace: image-flow
+  namespace: {{ .Release.Namespace }}
 spec:
   template:
     spec:
       containers:
       - name: minio-init
-        image: minio/mc
+        image: "{{ .Values.minio.initImage.repository }}:{{ .Values.minio.initImage.tag }}"
+        imagePullPolicy: {{ .Values.minio.initImage.pullPolicy }}
         command:
         - /bin/sh
         - -c
