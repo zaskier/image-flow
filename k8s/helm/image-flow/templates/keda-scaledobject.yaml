@@ -1,13 +1,14 @@
+{{- if .Capabilities.APIVersions.Has "keda.sh/v1alpha1" -}}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: processor-service-scaler
-  namespace: image-flow
+  namespace: {{ .Release.Namespace }}
 spec:
   scaleTargetRef:
     name: processor-service
-  minReplicaCount: 1
-  maxReplicaCount: 10
+  minReplicaCount: {{ .Values.processorService.minReplicas | default 1 }}
+  maxReplicaCount: {{ .Values.processorService.maxReplicas | default 10 }}
   pollingInterval: 30
   cooldownPeriod:  300
   triggers:
@@ -17,3 +18,4 @@ spec:
       includeUnacked: "true"
       queueLength: "5"
       hostFromEnv: RABBITMQ_URL
+{{- end -}}

@@ -1,0 +1,47 @@
+postgres:
+  image:
+    repository: postgres
+    tag: 15-alpine
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+
+redis:
+  image:
+    repository: redis
+    tag: 7-alpine
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+
+rabbitmq:
+  image:
+    repository: rabbitmq
+    tag: 3-management-alpine
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+
+minio:
+  image:
+    repository: minio/minio
+    tag: latest
+    pullPolicy: IfNotPresent
+  initImage:
+    repository: minio/mc
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+
+imageService:
+  image:
+    repository: image-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+
+processorService:
+  image:
+    repository: processor-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  minReplicas: 1
+  maxReplicas: 10

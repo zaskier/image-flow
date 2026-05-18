@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: processor-service
-  namespace: image-flow
+  namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.processorService.replicaCount }}
   selector:
     matchLabels:
       app: processor-service
@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: processor-service
-        image: processor-service:latest
-        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.processorService.image.repository }}:{{ .Values.processorService.image.tag }}"
+        imagePullPolicy: {{ .Values.processorService.image.pullPolicy }}
         ports:
         - containerPort: 3015
         envFrom:
@@ -29,7 +29,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: processor-service
-  namespace: image-flow
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     app: processor-service

@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: image-service
-  namespace: image-flow
+  namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.imageService.replicaCount }}
   selector:
     matchLabels:
       app: image-service
@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: image-service
-        image: image-service:latest
-        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.imageService.image.repository }}:{{ .Values.imageService.image.tag }}"
+        imagePullPolicy: {{ .Values.imageService.image.pullPolicy }}
         ports:
         - containerPort: 3005
         envFrom:
@@ -29,7 +29,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: image-service
-  namespace: image-flow
+  namespace: {{ .Release.Namespace }}
 spec:
   type: LoadBalancer
   selector:
